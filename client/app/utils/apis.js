@@ -7,8 +7,11 @@ import fs from "fs";
 import path from "path";
 import request from "request";
 
-const soundcloudClientId = "";
-const jamendoClientId = "";
+const clientIdList = require("../../client_id.json");
+
+
+const soundcloudClientId = clientIdList.soundCloudClientId;
+const jamendoClientId = clientIdList.jamendoClientId;
 const deezerClientId = "";
 
 function throwAbstractError() {
@@ -63,12 +66,10 @@ export class SoundcloudApi extends AbstractApi {
     });
   }
 
-  static searchMusic(query) {
-    this.initializeIfNotInitialized();
-    return SC.get("/tracks", { q: query })
-    .then(tracks => tracks);
-  }
+  static getSearchMusicURL(query) {
+    return `http://localhost:3000/search/soundcloud/${query}`;
 
+  }
   static getDownloadMusicURL(track) {
     return `http://api.soundcloud.com/tracks/${track.musicId}/stream?\
 client_id=${soundcloudClientId}`;
@@ -109,8 +110,8 @@ client_id=${soundcloudClientId}`;
 
 export class JamendoApi extends AbstractApi {
   static getSearchMusicURL(query) {
-    return `https://api.jamendo.com/v3.0/tracks/?client_id=${jamendoClientId}\
-&format=json&namesearch=${query}`;
+    return `http://localhost:3000/search/jamendo/${query}`;
+
   }
 
   static getDownloadMusicURL(track) {
@@ -134,7 +135,7 @@ client_id=${jamendoClientId}&id=${track.musicId}`;
 
 export class DeezerApi extends AbstractApi {
   static getSearchMusicURL(query) {
-    return `https://api.deezer.com/search?q=${query}`;
+    return `http://localhost:3000/search/deezer/${query}`;
   }
 
   static getDownloadMusicURL(track) {
