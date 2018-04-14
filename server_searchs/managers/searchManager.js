@@ -1,17 +1,13 @@
 "use strict";
 
-var SC = require('node-soundcloud');
 const clientIdList = require("../../client_id.json");
 const request = require('request');
 
 const providers = {
-    jamendo: "jamendo",
-    soundCloud: "soundcloud",
-    deezer: "deezer"
+    jamendo: "JamendoApi",
+    soundCloud: "SoundcloudApi",
+    deezer: "DeezerApi"
 }
-
-var isInitialized = false;
-
 
 var self = {};
 
@@ -23,29 +19,14 @@ self.searchMusic = function(provider, query, res){
             break;
 
         case providers.soundCloud:
-            initializeIfNotInitialized();
-            SC.get(`/tracks/${query}`, function(err, tracks){
-                console.log(tracks);
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log(tracks);
-                }
-            });
+            let soundcloudSearchUrl = `http://api.soundcloud.com/tracks?q${query}&client_id=${clientIdList.soundCloudClientId}`;
+            request.get(soundcloudSearchUrl).pipe(res);
             break;
 
         case providers.deezer:
             let deezerSearchUrl = `https://api.deezer.com/search?q=${query}`;
             request.get(deezerSearchUrl).pipe(res);
             break;
-    }
-}
-
-function initializeIfNotInitialized(){
-    if (isInitialized) return;
-    else {
-        SC.init({ id: clientIdList.soundcloudClientId });
-        isInitialized = true;
     }
 }
 

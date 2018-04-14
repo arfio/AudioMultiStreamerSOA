@@ -65,7 +65,7 @@ export class SoundcloudApi extends AbstractApi {
   }
 
   static getSearchMusicURL(query) {
-    return `http://localhost:3001/search/soundcloud/${query}`;
+    return `http://localhost:3001/search/SoundcloudApi/${query}`;
 
   }
   static getDownloadMusicURL(track) {
@@ -108,7 +108,7 @@ client_id=${soundcloudClientId}`;
 
 export class JamendoApi extends AbstractApi {
   static getSearchMusicURL(query) {
-    return `http://localhost:3001/search/jamendo/${query}`;
+    return `http://localhost:3001/search/JamendoApi/${query}`;
 
   }
 
@@ -133,7 +133,7 @@ client_id=${jamendoClientId}&id=${track.musicId}`;
 
 export class DeezerApi extends AbstractApi {
   static getSearchMusicURL(query) {
-    return `http://localhost:3001/search/deezer/${query}`;
+    return `http://localhost:3001/search/DeezerApi/${query}`;
   }
 
   static getDownloadMusicURL(track) {
