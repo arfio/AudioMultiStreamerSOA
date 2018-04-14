@@ -1,6 +1,38 @@
 import { handleActions } from "redux-actions";
 import { getApi } from "../utils/apis";
 import actionList from "../actions/actionList";
+import Sound from "react-sound";
+import request from "request";
+import temp from "temp";
+import fs from "fs";
+
+const playerUri = "http://localhost:3002/player/";
+
+function playMusic(track) {
+  const inputStream = fs.createWriteStream(temp.path({suffix: ".mp3"}));
+  return new Promise(function(resolve, reject) {
+    request.get(playerUri + "play/" + track.provider)
+      .form({ track: JSON.stringify(track) })
+      .pipe(inputStream)
+      .on("finish", () => {
+        resolve({
+          path: inputStream.path,
+          status: Sound.status.PLAYING,
+          isPlaying: true,
+          position: 0,
+          musicId: track.musicId,
+        });
+      });
+  });
+}
+
+function pauseMusic(player, track) {
+  return { ...player, status: Sound.status.PAUSED, isPlaying: false };
+}
+
+function resumeMusic(player, track) {
+  return { ...player, status: Sound.status.PLAYING, isPlaying: true };
+}
 
 export default handleActions({
   [actionList.playPending]: (state, action) => {
@@ -8,13 +40,10 @@ export default handleActions({
     let player = {};
     if (Object.getOwnPropertyNames(state.track).length > 0 &&
         Object.getOwnPropertyNames(state.player).length > 0) {
-      const previousApi = getApi(state.track.provider);
-      player = previousApi.pauseMusic(state.player, state.track);
+      player = pauseMusic(state.player, state.track);
     }
 
-    const api = getApi(action.payload.provider);
-    api.playMusic(action.payload)
-    .then((player) => {
+    playMusic(action.payload).then((player) => {
       action.asyncDispatch(actionList.playSuccess(player));
     });
     return { ...state, track: action.payload, player: { ...player, isLoading: true }};
@@ -32,24 +61,20 @@ export default handleActions({
     if (Object.getOwnPropertyNames(state.track).length == 0) {
       return { ...state };
     }
-    const api = getApi(state.track.provider);
-    api.playMusic(state.track)
-    .then((player) => {
-      const newPlayer = api.pauseMusic(player, state.track);
+    playMusic(state.track).then((player) => {
+      const newPlayer = pauseMusic(player, state.track);
       action.asyncDispatch(actionList.playSuccess(newPlayer));
     });
     return { ...state, player: { isLoading: true } };
   },
 
   [actionList.pause]: (state, action) => {
-    const api = getApi(state.track.provider);
-    const player = api.pauseMusic(state.player, state.track);
+    const player = pauseMusic(state.player, state.track);
     return { ...state, player: player };
   },
 
   [actionList.resume]: (state, action) => {
-    const api = getApi(state.track.provider);
-    const player = api.resumeMusic(state.player, state.track);
+    const player = resumeMusic(state.player, state.track);
     return { ...state, player: player };
   },
 }, {track: {}, player: {}});

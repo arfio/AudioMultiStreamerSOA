@@ -23,34 +23,7 @@ class AbstractApi {
     .then(res => res.data);
   }
 
-  static playMusic(track) {
-    return Axios.get(this.getDownloadMusicURL(track), {
-      responseType: "arraybuffer",
-      headers: {"Accept": "audio/mpeg"}
-    })
-    .then((response) => {
-      const inputPath = temp.path({suffix: ".mp3"});
-      fs.writeFileSync(inputPath, Buffer.from(response.data));
-      return {
-        path: inputPath,
-        status: Sound.status.PLAYING,
-        isPlaying: true,
-        position: 0,
-        musicId: track.musicId,
-      };
-    });
-  }
-
-  static pauseMusic(player, track) {
-    return { ...player, status: Sound.status.PAUSED, isPlaying: false };
-  }
-
-  static resumeMusic(player, track) {
-    return { ...player, status: Sound.status.PLAYING, isPlaying: true };
-  }
-
   static getSearchMusicURL(query) { throwAbstractError(); }
-  static getDownloadMusicURL(musicId) { throwAbstractError(); }
   static extractMusicObjectFromResult(result) { throwAbstractError(); }
 }
 
@@ -67,27 +40,6 @@ export class SoundcloudApi extends AbstractApi {
   static getSearchMusicURL(query) {
     return `http://localhost:3001/search/soundcloud/${query}`;
 
-  }
-  static getDownloadMusicURL(track) {
-    return `http://api.soundcloud.com/tracks/${track.musicId}/stream?\
-client_id=${soundcloudClientId}`;
-  }
-
-  static playMusic(track) {
-    return new Promise(function(resolve, reject) {
-      const inputStream = fs.createWriteStream(temp.path({suffix: ".mp3"}));
-
-      request(SoundcloudApi.getDownloadMusicURL(track)).pipe(inputStream)
-      .on("finish", () => {
-        resolve({
-          path: inputStream.path,
-          status: Sound.status.PLAYING,
-          isPlaying: true,
-          position: 0,
-          musicId: track.musicId,
-        });
-      });
-    });
   }
 
   static extractMusicObjectFromResult(result) {
@@ -112,11 +64,6 @@ export class JamendoApi extends AbstractApi {
 
   }
 
-  static getDownloadMusicURL(track) {
-    return `https://api.jamendo.com/v3.0/tracks/file/?\
-client_id=${jamendoClientId}&id=${track.musicId}`;
-  }
-
   static extractMusicObjectFromResult(result) {
     return result.results.map((track) => {
       return {
@@ -134,10 +81,6 @@ client_id=${jamendoClientId}&id=${track.musicId}`;
 export class DeezerApi extends AbstractApi {
   static getSearchMusicURL(query) {
     return `http://localhost:3001/search/deezer/${query}`;
-  }
-
-  static getDownloadMusicURL(track) {
-    return track.preview
   }
 
   static extractMusicObjectFromResult(result) {
