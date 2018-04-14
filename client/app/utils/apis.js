@@ -7,12 +7,10 @@ import fs from "fs";
 import path from "path";
 import request from "request";
 
-const clientIdList = require("../../client_id.json");
-
+const clientIdList = require("../../../client_id.json");
 
 const soundcloudClientId = clientIdList.soundCloudClientId;
 const jamendoClientId = clientIdList.jamendoClientId;
-const deezerClientId = "";
 
 function throwAbstractError() {
   throw `This class is abstract. This method should be implemented in the \
@@ -67,7 +65,7 @@ export class SoundcloudApi extends AbstractApi {
   }
 
   static getSearchMusicURL(query) {
-    return `http://localhost:3000/search/soundcloud/${query}`;
+    return `http://localhost:3001/search/soundcloud/${query}`;
 
   }
   static getDownloadMusicURL(track) {
@@ -110,7 +108,7 @@ client_id=${soundcloudClientId}`;
 
 export class JamendoApi extends AbstractApi {
   static getSearchMusicURL(query) {
-    return `http://localhost:3000/search/jamendo/${query}`;
+    return `http://localhost:3001/search/jamendo/${query}`;
 
   }
 
@@ -135,7 +133,7 @@ client_id=${jamendoClientId}&id=${track.musicId}`;
 
 export class DeezerApi extends AbstractApi {
   static getSearchMusicURL(query) {
-    return `http://localhost:3000/search/deezer/${query}`;
+    return `http://localhost:3001/search/deezer/${query}`;
   }
 
   static getDownloadMusicURL(track) {
