@@ -19,7 +19,7 @@ self.searchMusic = function(provider, query, res){
             break;
 
         case providers.soundCloud:
-            let soundcloudSearchUrl = `http://api.soundcloud.com/tracks?q${query}&client_id=${clientIdList.soundCloudClientId}`;
+            let soundcloudSearchUrl = `http://api.soundcloud.com/tracks?q=${query}&client_id=${clientIdList.soundCloudClientId}`;
             request.get(soundcloudSearchUrl).pipe(res);
             break;
 

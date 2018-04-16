@@ -7,7 +7,7 @@ import fs from "fs";
 import path from "path";
 import request from "request";
 
-const clientIdList = require("../../../client_id.json");
+const clientIdList = require("./client_id.json");
 
 const soundcloudClientId = clientIdList.soundCloudClientId;
 const jamendoClientId = clientIdList.jamendoClientId;
